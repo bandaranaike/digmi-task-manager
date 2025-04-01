@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\Interfaces\TaskRepositoryInterface;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -15,12 +16,12 @@ class TaskController extends Controller
         $this->taskRepository = $taskRepository;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         return response()->json($this->taskRepository->all());
     }
 
-    public function show($id)
+    public function show($id): JsonResponse
     {
         $task = $this->taskRepository->find($id);
         if (!$task) {
@@ -29,19 +30,19 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $task = $this->taskRepository->create($request->all());
         return response()->json($task, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
         $updated = $this->taskRepository->update($id, $request->all());
         return response()->json(['success' => $updated]);
     }
 
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $deleted = $this->taskRepository->delete($id);
         return response()->json(['success' => $deleted]);

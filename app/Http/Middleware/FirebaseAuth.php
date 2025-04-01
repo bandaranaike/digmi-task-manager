@@ -16,6 +16,7 @@ class FirebaseAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         $idToken = $request->header('Authorization');
 
         if (!$idToken) {
