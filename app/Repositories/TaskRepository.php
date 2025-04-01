@@ -3,11 +3,11 @@
 namespace App\Repositories;
 
 use App\Repositories\Interfaces\TaskRepositoryInterface;
-use Illuminate\Support\Collection;
 use Kreait\Firebase\Factory;
 
 class TaskRepository implements TaskRepositoryInterface
 {
+    const COLLECTION_NAME = 'tasks';
     protected $firestore;
 
     public function __construct()
@@ -18,28 +18,30 @@ class TaskRepository implements TaskRepositoryInterface
 
     }
 
-    public function all(): Collection
+    public function all()
     {
-        return $this->firestore->collection('tasks')->documents();
+        return array_map(function ($snapshot) {
+            return [...$snapshot->data(), "id" => $snapshot->id()];
+        }, $this->firestore->collection(self::COLLECTION_NAME)->documents()->rows());
     }
 
     public function find($id)
     {
-        return $this->firestore->collection('tasks')->document($id)->snapshot();
+        return $this->firestore->collection(self::COLLECTION_NAME)->document($id)->snapshot()->data();
     }
 
     public function create($data)
     {
-        return $this->firestore->collection('tasks')->add($data);
+        return $this->firestore->collection(self::COLLECTION_NAME)->add($data);
     }
 
     public function update($id, $data)
     {
-        return $this->firestore->collection('tasks')->document($id)->set($data, ['merge' => true]);
+        return $this->firestore->collection(self::COLLECTION_NAME)->document($id)->set($data, ['merge' => true]);
     }
 
     public function delete($id)
     {
-        return $this->firestore->collection('tasks')->document($id)->delete();
+        return $this->firestore->collection(self::COLLECTION_NAME)->document($id)->delete();
     }
 }
