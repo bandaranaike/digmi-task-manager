@@ -19,7 +19,7 @@ To get the Firebase configuration, follow these steps:
 
 Save this file as `firebase-credentials.json` in the `storage/app` folder of your project.
 
-You can refer to `firebase-credentials-example.json` for the format of the credentials file.
+You can refer to [`firebase-credentials-example.json`](storage/app/firebase-credentials-example.json) for the format of the credentials file.
 
 ## Base URL
 ```
