@@ -5,8 +5,21 @@ This API provides task management functionality with Firebase Firestore as the d
 
 ## Assumptions
 - Any logged-in user has full access to all tasks.
-- Filtering options were not implemented due to time constraints.
-- The application can be improved to allow users to manage only their own tasks.
+
+
+## Firebase Configuration
+
+To get the Firebase configuration, follow these steps:
+
+1. Go to the Firebase Console: [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2. Select your project.
+3. Navigate to **Project Settings**.
+4. In the **Service accounts** tab, click on **Generate new private key**.
+5. This will download a JSON file containing your Firebase credentials.
+
+Save this file as `firebase-credentials.json` in the `storage/app` folder of your project.
+
+You can refer to `firebase-credentials-example.json` for the format of the credentials file.
 
 ## Base URL
 ```
@@ -14,15 +27,46 @@ https://your-api-domain.com/api/tasks
 ```
 
 ## Authentication
+
 The API uses Firebase authentication via a middleware (`FirebaseAuth`). All routes require a valid Firebase-authenticated user.
+
 
 ## Endpoints
 
-### 1. List All Tasks
+Please add the `Authorization` header with the `firebase_id_token` you got from logging in.
+
+### 1. Authentication
+**Request:**
+```
+POST /api/auth/login
+```
+
+**Body:**
+```json
+{
+    "email": "user@example.com",
+    "password": "user_password"
+}
+```
+**Response:**
+```json
+{
+    "message": "Sign-in successful",
+    "idToken": "firebase_id_token"
+}
+``` 
+
+### 2. List All Tasks
 **Request:**
 ```
 GET /api/tasks
 ```
+**Query Parameters:**
+- `due_date` (optional): Filter tasks by a specific due date. If `due_date` is present, `due_start_date` and `due_end_date` will be overridden and not used.
+- `due_start_date` (optional): Filter tasks with a due date on or after this date.
+- `due_end_date` (optional): Filter tasks with a due date on or before this date.
+- `status` (optional): Filter tasks by their status (`pending`, `in-progress`, `completed`).
+
 **Response:**
 ```json
 [
@@ -42,7 +86,7 @@ GET /api/tasks
 
 ---
 
-### 2. Get a Specific Task
+### 3. Get a Specific Task
 **Request:**
 ```
 GET /api/tasks/{id}
@@ -65,7 +109,7 @@ GET /api/tasks/{id}
 
 ---
 
-### 3. Create a New Task
+### 4. Create a New Task
 **Request:**
 ```
 POST /api/tasks
@@ -100,7 +144,7 @@ POST /api/tasks
 
 ---
 
-### 4. Update a Task
+### 5. Update a Task
 **Request:**
 ```
 PUT /api/tasks/{id}
@@ -135,7 +179,7 @@ PUT /api/tasks/{id}
 
 ---
 
-### 5. Delete a Task
+### 6. Delete a Task
 **Request:**
 ```
 DELETE /api/tasks/{id}
@@ -152,7 +196,6 @@ DELETE /api/tasks/{id}
 
 ## Future Improvements
 - Implement user-specific task management so that users can only access their own tasks.
-- Add filtering options for tasks by status and due date.
 - Implement pagination for listing tasks.
 - Improve error handling and logging.
 

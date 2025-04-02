@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\TaskController;
 
-Route::post('login', [AuthController::class, 'signIn']);
+Route::post('auth/login', [AuthController::class, 'signIn']);
 
 Route::prefix('tasks')->middleware(FirebaseAuth::class)->group(function () {
     Route::get('/', [TaskController::class, 'index']);

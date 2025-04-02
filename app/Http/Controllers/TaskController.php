@@ -21,8 +21,9 @@ class TaskController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+        $dueDate = $request->get('due_date');
+        $startDate = $dueDate ?: $request->get('due_start_date');
+        $endDate = $dueDate ?: $request->get('due_end_date');
         $status = $request->get('status');
 
         return response()->json($this->taskRepository->all($startDate, $endDate, $status));
