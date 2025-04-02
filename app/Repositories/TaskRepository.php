@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Helpers\DateHelper;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use Google\Cloud\Firestore\DocumentReference;
 use Google\Cloud\Firestore\FirestoreClient;
@@ -20,11 +21,30 @@ class TaskRepository implements TaskRepositoryInterface
 
     }
 
-    public function all(): array
+    public function all($startDate = null, $endDate = null, $status = null): array
     {
+        $query = $this->firestore->collection(self::COLLECTION_NAME);
+
+        $startDate = $startDate ? DateHelper::formatDate($startDate) : null;
+        $endDate = $endDate ? DateHelper::formatDate($endDate) : null;
+
+        if ($startDate) {
+            $query = $query->where('due_date', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query = $query->where('due_date', '<=', $endDate);
+        }
+
+        if ($status) {
+            $query = $query->where('status', '==', $status);
+        }
+
+        $dataArray = $query->documents()->rows();
+
         return array_map(function ($snapshot) {
             return [...$snapshot->data(), "id" => $snapshot->id()];
-        }, $this->firestore->collection(self::COLLECTION_NAME)->documents()->rows());
+        }, $dataArray);
     }
 
     public function find($id): array

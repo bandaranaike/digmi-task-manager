@@ -6,7 +6,7 @@ use Google\Cloud\Firestore\DocumentReference;
 
 interface TaskRepositoryInterface
 {
-    public function all(): array;
+    public function all($startDate = null, $endDate = null, $status = null): array;
 
     public function find(int $id): array;
 

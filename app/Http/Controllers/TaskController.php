@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DateHelper;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Repositories\Interfaces\TaskRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,9 +19,13 @@ class TaskController extends Controller
         $this->taskRepository = $taskRepository;
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        return response()->json($this->taskRepository->all());
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        $status = $request->get('status');
+
+        return response()->json($this->taskRepository->all($startDate, $endDate, $status));
     }
 
     public function show($id): JsonResponse
@@ -30,18 +37,38 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreTaskRequest $request): JsonResponse
     {
-        $task = $this->taskRepository->create($request->all());
+        $dueDate = DateHelper::formatDate($request->get('due_date'));
+
+        $data = [
+            ...$request->all(),
+            "created_at" => now(),
+            "updated_at" => now(),
+            "due_date" => $dueDate
+        ];
+
+        $task = $this->taskRepository->create($data);
+
         return response()->json([
             "message" => "Task created successfully",
             "task" => $task,
         ], 201);
     }
 
-    public function update(Request $request, $id): JsonResponse
+    public function update(UpdateTaskRequest $request, $id): JsonResponse
     {
-        $updated = $this->taskRepository->update($id, $request->all());
+
+        $dueDate = DateHelper::formatDate($request->get('due_date'));
+
+        $data = [
+            ...$request->all(),
+            "updated_at" => now(),
+            "due_date" => $dueDate
+        ];
+
+        $updated = $this->taskRepository->update($id, $data);
+
         if ($updated) {
             return response()->json([
                 "message" => "Task updated successfully",

@@ -36,4 +36,9 @@ class FirebaseService
             return null;
         }
     }
+
+    public function getAuth(): Auth
+    {
+        return $this->auth;
+    }
 }
